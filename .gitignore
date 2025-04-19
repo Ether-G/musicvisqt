@@ -1,0 +1,32 @@
+# Build directories
+build/
+out/
+cmake-build-*/
+
+# IDE files
+.idea/
+.vscode/
+*.user
+*.pro.user
+*.autosave
+
+# Compiled object files
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.dylib
+
+# External libraries
+external/projectm/*
+!external/projectm/.gitkeep
+
+# Generated files
+moc_*
+ui_*
+*.qrc.cpp
+qrc_*
+
+# Misc
+.DS_Store
