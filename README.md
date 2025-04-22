@@ -2,7 +2,7 @@
 
 A Qt-based music visualization application built with ProjectM integration. This application provides real-time music visualization with OpenGL rendering, automatic preset cycling, and audio playback.
 
-## Sample
+## Sample (Heavilly Compressed - Poor quality)
 
 https://github.com/user-attachments/assets/7159580c-9750-4241-aa28-9b1c8f7a9729
 
