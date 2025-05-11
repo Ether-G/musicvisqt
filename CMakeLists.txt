@@ -1,6 +1,6 @@
 # musicvisqt/CMakeLists.txt
 cmake_minimum_required(VERSION 3.16)
-project(QtProjectMVisualizer LANGUAGES CXX)
+project(musicvisqt VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,7 +15,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # --- Find External Libraries ---
 # You might want to remove this hardcoded path if you pass it via the command line anyway
 # set(CMAKE_PREFIX_PATH "/home/looter/Qt/6.9.0/gcc_64") # Qt Path
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGLWidgets Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets Multimedia)
 
 # *** Use PkgConfig to find SndFile ***
 find_package(PkgConfig REQUIRED)
@@ -36,22 +36,28 @@ set(STATIC_PRESET_PATH "${CMAKE_CURRENT_SOURCE_DIR}/presets")
 add_subdirectory(external/projectm)
 
 # --- Define Your Executable ---
-add_executable(QtProjectMVisualizer
+set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
     projectmwindow.cpp
     projectmwindow.h
+    playercontroller.cpp
+    playercontroller.h
+)
+
+add_executable(musicvisqt
+    ${PROJECT_SOURCES}
 )
 
 # --- Add Compile Definition for Preset Path ---
-target_compile_definitions(QtProjectMVisualizer PRIVATE
+target_compile_definitions(musicvisqt PRIVATE
     "PRESET_PATH_FROM_CMAKE=\"${STATIC_PRESET_PATH}\""
 )
 
 # --- Add Include Directories ---
-target_include_directories(QtProjectMVisualizer PUBLIC
+target_include_directories(musicvisqt PUBLIC
     # projectM includes
     ${CMAKE_CURRENT_SOURCE_DIR}/external/projectm/src/libprojectM
     ${CMAKE_CURRENT_SOURCE_DIR}/external/projectm/src/api/include
@@ -65,15 +71,32 @@ target_include_directories(QtProjectMVisualizer PUBLIC
 )
 
 # --- Link Libraries ---
-target_link_libraries(QtProjectMVisualizer PRIVATE
+target_link_libraries(musicvisqt PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
+    Qt6::OpenGL
     Qt6::OpenGLWidgets
     Qt6::Multimedia
-    libprojectM::projectM
+    projectM
     ${SNDFILE_LIBRARIES}
 )
 
 # --- Install (Optional) ---
-# install(TARGETS QtProjectMVisualizer DESTINATION bin)
+install(TARGETS musicvisqt
+    RUNTIME DESTINATION bin
+)
+
+# Install presets
+install(DIRECTORY presets/
+    DESTINATION share/musicvisqt/presets
+    FILES_MATCHING PATTERN "*.milk"
+)
+
+# Install textures
+install(DIRECTORY presets/Textures/
+    DESTINATION share/musicvisqt/presets/Textures
+    FILES_MATCHING PATTERN "*.png"
+    PATTERN "*.jpg"
+    PATTERN "*.jpeg"
+)

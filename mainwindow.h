@@ -6,6 +6,7 @@
 #include <QWindow>
 #include <QWidget>
 #include "projectmwindow.h"
+#include "playercontroller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,5 +26,6 @@ private:
     Ui::MainWindow *ui;
     ProjectMWindow *m_projectMWindow;
     QWidget *m_containerWidget;
+    PlayerController *m_playerController;
 };
 #endif // MAINWINDOW_H

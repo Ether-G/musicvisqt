@@ -40,6 +40,10 @@ public:
     void previousPreset();
     void setPresetDuration(double seconds);
 
+    // Media player access
+    QMediaPlayer* mediaPlayer() const { return m_mediaPlayer; }
+    QAudioOutput* audioOutput() const { return m_audioOutput; }
+
 protected:
     bool event(QEvent *event) override;
     void exposeEvent(QExposeEvent *event) override;

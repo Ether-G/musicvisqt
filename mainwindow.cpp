@@ -1,11 +1,10 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "./ui_mainwindow.h"
 #include "projectmwindow.h"
-
 #include <QVBoxLayout>
-#include <QWindow>
-#include <QWidget>
-#include <QDebug>
+#include <QFileDialog>
+#include <QMenu>
+#include <QAction>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,36 +12,57 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     
-    // ProjectMWindow (direct OpenGL window) Will probably refactor later, but I had alot of difficulty using opengl directly as a widget in QT
-    m_projectMWindow = new ProjectMWindow();
-    m_projectMWindow->setMinimumSize(QSize(400, 300));
+    // Create central widget and layout
+    QWidget *centralWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+    setCentralWidget(centralWidget);
     
-    // container widget to hold the native window
+    // Create ProjectM window
+    m_projectMWindow = new ProjectMWindow();
+    m_projectMWindow->setMinimumSize(QSize(800, 600));
+    
+    // Create container widget for the ProjectM window
     m_containerWidget = QWidget::createWindowContainer(m_projectMWindow, this);
     m_containerWidget->setFocusPolicy(Qt::StrongFocus);
     m_containerWidget->setFocus();
     
-    // Set it central
-    setCentralWidget(m_containerWidget);
+    // Create player controller
+    m_playerController = new PlayerController(this);
+    m_playerController->setMediaPlayer(m_projectMWindow->mediaPlayer());
+    m_playerController->setAudioOutput(m_projectMWindow->audioOutput());
     
-    // window title
-    setWindowTitle("MusicVisQT");
+    // Add widgets to layout
+    layout->addWidget(m_containerWidget);
+    layout->addWidget(m_playerController);
     
-    // initial size
-    resize(800, 600);
+    // Set up menu actions
+    QAction *openAction = new QAction(tr("Open Audio File"), this);
+    connect(openAction, &QAction::triggered, this, [this]() {
+        QString filePath = QFileDialog::getOpenFileName(this,
+            tr("Open Audio File"), "",
+            tr("Audio Files (*.mp3 *.wav *.ogg *.flac);;All Files (*)"));
+            
+        if (!filePath.isEmpty()) {
+            m_projectMWindow->setAudioFile(filePath);
+        }
+    });
+    
+    // Add menu bar
+    QMenu *fileMenu = menuBar()->addMenu(tr("File"));
+    fileMenu->addAction(openAction);
+    
+    // Set window title
+    setWindowTitle(tr("MusicVisQT"));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    // The m_containerWidget and m_projectMWindow will be deleted when parent is destroyed
 }
 
 void MainWindow::setAudioFile(const QString& filePath)
 {
     if (m_projectMWindow) {
         m_projectMWindow->setAudioFile(filePath);
-    } else {
-        qWarning() << "MainWindow could not find ProjectMWindow instance to set audio file.";
     }
 }

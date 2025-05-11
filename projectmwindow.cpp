@@ -26,6 +26,7 @@
 #include <cstring>
 #include <QDir>
 #include <QCoreApplication>
+#include <random>
 
 // Constants
 const int FPS_TARGET = 60;
@@ -589,7 +590,9 @@ void ProjectMWindow::loadAvailablePresets() {
             qInfo() << "Found" << m_presetFiles.size() << "preset files";
             
             // Random
-            std::random_shuffle(m_presetFiles.begin(), m_presetFiles.end());
+            std::random_device rd;
+            std::mt19937 g(rd());
+            std::shuffle(m_presetFiles.begin(), m_presetFiles.end(), g);
         }
     } catch (const std::exception& e) {
         qWarning() << "Error loading presets:" << e.what();
